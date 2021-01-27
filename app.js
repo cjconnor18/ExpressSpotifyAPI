@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const loginRoutes = require('./routes/loginRoutes');
 
 
 const app = express();
@@ -23,5 +24,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.render('index');
 })
+
+app.use('/login', loginRoutes)
 
 
