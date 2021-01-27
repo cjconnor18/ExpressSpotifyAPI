@@ -94,9 +94,10 @@ router.get('/callback', function(req, res) {
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
           console.log(body);
-          
+          let limit = 20;
+          let offset = 0;
           let optionsPlaylist = {
-            url: 'https://api.spotify.com/v1/me/playlists',
+            url: 'https://api.spotify.com/v1/me/playlists?offset=' + offset.toString() + '&limit=' + limit.toString(),
             headers: { 'Authorization': 'Bearer ' + access_token },
             json: true
           }
@@ -104,7 +105,16 @@ router.get('/callback', function(req, res) {
           request.get(optionsPlaylist, (error, response, body) => {
 
             console.log(body);
-            
+            if(body.total > limit + offset) {
+              request.get({
+                url: body.next,
+                headers: { 'Authorization': 'Bearer ' + access_token },
+                json: true
+              }, (error, response, body) => {
+
+                console.log(body);
+              })
+            }
 
 
           })
@@ -154,10 +164,6 @@ router.get('/refresh_token', function(req, res) {
 });
 
 router.get('/success', (req, res) => {
-  // console.log('req body');
-  // console.log(req);
-  // console.log('res body');
-  // console.log(res);
   res.render('./login/success');
 })
 
