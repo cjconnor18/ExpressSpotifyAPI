@@ -12,6 +12,8 @@ const client_id = secrets.clientID;
 const client_secret = secrets.clientSecret;
 const redirect_uri = "http://localhost:3000/login/callback";
 
+let listOfPlaylists = [];
+
 var generateRandomString = function(length) {
   var text = '';
   var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -94,7 +96,7 @@ router.get('/callback', function(req, res) {
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
           console.log(body);
-          let limit = 20;
+          let limit = 50;
           let offset = 0;
           let optionsPlaylist = {
             url: 'https://api.spotify.com/v1/me/playlists?offset=' + offset.toString() + '&limit=' + limit.toString(),
@@ -105,6 +107,13 @@ router.get('/callback', function(req, res) {
           request.get(optionsPlaylist, (error, response, body) => {
 
             console.log(body);
+            body.items.forEach(playlist => {
+              listOfPlaylists.push(playlist);
+            });
+              
+            
+
+
             if(body.total > limit + offset) {
               request.get({
                 url: body.next,
@@ -113,6 +122,7 @@ router.get('/callback', function(req, res) {
               }, (error, response, body) => {
 
                 console.log(body);
+                console.log(listOfPlaylists);
               })
             }
 
@@ -164,7 +174,11 @@ router.get('/refresh_token', function(req, res) {
 });
 
 router.get('/success', (req, res) => {
-  res.render('./login/success');
-})
+  res.render('./login/success', { playlists : listOfPlaylists });
+});
+
+router.get('player/:playerId', (req, res) => {
+  res.render('/login/player')
+});
 
 module.exports = router;

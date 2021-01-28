@@ -3,5 +3,19 @@
 <%- include('../partials/nav.ejs') %>
 
 <p>Login Successful</p>
-<p></p>
+<p>Please Select a Playlist</p>
+
+  <% if(playlists.length > 0) { %> 
+    <% playlists.forEach( playlist => { %>
+      <a href="/login/player/<%= playlist.id %>" > 
+        <%= playlist.name %> <br>
+        <%= playlist.description %>
+      </a>
+    <% }) %>
+  <% } else { %>
+      <p>No playlists available</p>
+  <% } %>
+
+
+
 <%- include('../partials/footer.ejs') %>
