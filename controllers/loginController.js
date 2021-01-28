@@ -12,6 +12,9 @@ const redirect_uri = "http://localhost:3000/login/callback";
 let stateKey = 'spotify_auth_state';
 let listsOfPlaylists = [];
 
+let access_token = "";
+let refresh_token = "";
+
 const login_index = (req, res) => {
   res.render('./login/index', { secrets });
 }
@@ -63,8 +66,8 @@ const login_user = (req, res) => {
     request.post(authOptions, function(error, response, body) {
       if (!error && response.statusCode === 200) {
 
-        var access_token = body.access_token,
-            refresh_token = body.refresh_token;
+        access_token = body.access_token;
+        refresh_token = body.refresh_token;
 
         var options = {
           url: 'https://api.spotify.com/v1/me',
@@ -99,7 +102,6 @@ const login_user = (req, res) => {
                 body.items.forEach(playlist => {
                   listsOfPlaylists.push(new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
                 });
-                console.log(body);
               })
             }
           })
@@ -122,11 +124,34 @@ const login_user = (req, res) => {
 };
 
 const login_playlists_get = (req, res) => {
-  console.log(listsOfPlaylists , listsOfPlaylists.length);
   res.render('./login/playlists', { playlists : listsOfPlaylists });
 }
 
+// will display a spotify player with tracks
 const login_player = (req, res) => {
+  const id = req.params.playlistId;
+  let optionsTrackList = {
+    url: 'https://api.spotify.com/v1/playlists/' + id + '/tracks',
+    headers: { 'Authorization': 'Bearer ' + access_token },
+    json: true
+  }
+  request.get(optionsTrackList, (error, response, body) => {
+    // body.items.forEach( track => {
+    //   console.log(track.name)
+    //   track.artists.forEach( artist => {
+    //     console.log(artist);
+    //   })
+    // })
+    console.log(body.items[0]);
+    console.log(' ');
+    console.log('-----------------------------------------');
+    console.log(' ');
+    console.log(body.items[0].track.name);
+    console.log(body.items[0].track.artists[0].name);
+    console.log(body.items[0].track.duration_ms);
+    
+  })
+
   res.render('./login/player')
 };
 
