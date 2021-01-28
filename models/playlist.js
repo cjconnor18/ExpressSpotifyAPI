@@ -7,6 +7,10 @@ class Playlist {
     this.trackListingURI = trackListingURI
     this.tracks = []
   }
+  addTrack(track) {
+    this.tracks.push(track);
+  }
+  
 }
 
 module.exports = Playlist;
