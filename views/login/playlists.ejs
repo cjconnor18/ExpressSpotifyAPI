@@ -1,0 +1,22 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/nav.ejs') %>
+
+<p>Login Successful</p>
+<p>Please Select a Playlist</p>
+
+  <% if(playlists.length > 0) { %> 
+    <% playlists.forEach(playlist => { %>
+      <a href="/login/player/<%= playlist.id %>" > 
+        <h3><%= playlist.name %></h3>
+        <p>Description: <%= playlist.description %></p>
+        <p>No of Tracks: <%= playlist.trackQuantity %></p>
+      </a>
+    <% }) %>
+  <% } else { %>
+      <p>No playlists available</p>
+  <% } %>
+
+
+
+<%- include('../partials/footer.ejs') %>
