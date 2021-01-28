@@ -1,6 +1,7 @@
 const request  = require('request');
 const querystring = require('querystring');
 const secrets = require('../secrets');
+const Playlist = require('../models/playlist');
 const generateRandomString = require('../miscFunctions').generateRandomString;
 
 
@@ -72,7 +73,7 @@ const login_user = (req, res) => {
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-          console.log(body);
+          // console.log(body);
           let limit = 50;
           let offset = 0;
           let optionsPlaylist = {
@@ -83,9 +84,9 @@ const login_user = (req, res) => {
 
           request.get(optionsPlaylist, (error, response, body) => {
 
-            console.log(body);
+            //console.log(body);
             body.items.forEach(playlist => {
-              listOfPlaylists.push(playlist);
+              listOfPlaylists.push(new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
             });
               
             
@@ -98,8 +99,8 @@ const login_user = (req, res) => {
                 json: true
               }, (error, response, body) => {
 
-                console.log(body);
-                console.log(listOfPlaylists);
+                //console.log(body);
+                
               })
             }
 
@@ -109,8 +110,7 @@ const login_user = (req, res) => {
 
 
         });
-        // res.render('./login/success', { access_token, refresh_token, playlists: listOfPlaylists});
-        // we can also pass the token to the browser to make requests from there
+        
         res.redirect('/login/playlists/#' +
           querystring.stringify({
             access_token: access_token,
@@ -127,11 +127,12 @@ const login_user = (req, res) => {
 };
 
 const login_playlists_get = (req, res) => {
+  console.log(listOfPlaylists);
   res.render('./login/playlists', { playlists : listOfPlaylists });
 }
 
-const login_playerId = (req, res) => {
-  res.render('/login/player')
+const login_player = (req, res) => {
+  res.render('./login/player')
 };
 
 
@@ -167,5 +168,5 @@ module.exports = {
   login_user,
   login_playlists_get,
   login_refreshToken, 
-  login_playerId
+  login_player
 };

@@ -8,8 +8,9 @@
   <% if(playlists.length > 0) { %> 
     <% playlists.forEach( playlist => { %>
       <a href="/login/player/<%= playlist.id %>" > 
-        <%= playlist.name %> <br>
-        <%= playlist.description %>
+        <h3><%= playlist.name %></h3>
+        <p>Description: <%= playlist.description %></p>
+        <p>No of Tracks: <%= playlist.trackQuantity %></p>
       </a>
     <% }) %>
   <% } else { %>

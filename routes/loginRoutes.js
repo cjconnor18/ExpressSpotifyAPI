@@ -13,6 +13,6 @@ router.get('/login', loginRoutes.login_login);
 router.get('/callback', loginRoutes.login_user);
 router.get('/refresh_token', loginRoutes.login_refreshToken);
 router.get('/playlists', loginRoutes.login_playlists_get);
-router.get('player/:playerId', loginRoutes.login_playerId);
+router.get('/player/:playlistId', loginRoutes.login_player);
 
 module.exports = router;
