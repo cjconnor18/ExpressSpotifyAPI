@@ -102,16 +102,27 @@ const login_user = (req, res) => {
                 body.items.forEach(playlist => {
                   listsOfPlaylists.push(new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
                 });
+                res.redirect('/login/playlists/#' +
+                  querystring.stringify({
+                  access_token: access_token,
+                  refresh_token: refresh_token
+                }));
               })
+            } else {
+              res.redirect('/login/playlists/#' +
+              querystring.stringify({
+                access_token: access_token,
+                refresh_token: refresh_token
+              }));
             }
           })
         }) 
         
-        res.redirect('/login/playlists/#' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token
-        }));  
+        // res.redirect('/login/playlists/#' +
+        //   querystring.stringify({
+        //     access_token: access_token,
+        //     refresh_token: refresh_token
+        // }));  
     
       } else {
         res.redirect('/#' +
