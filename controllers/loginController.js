@@ -117,7 +117,7 @@ const login_user = (req, res) => {
             }
           })
         }) 
-        
+        // moved this up into callback functions because otherwise it fired before loading the playlists.
         // res.redirect('/login/playlists/#' +
         //   querystring.stringify({
         //     access_token: access_token,
