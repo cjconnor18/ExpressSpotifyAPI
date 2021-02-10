@@ -9,10 +9,14 @@
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
+  let intervalTimeMinutes = .5;
+  let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   console.log("____________________________________________________________________________");
   console.log("access_token" , access_token);
   console.log("refresh_token", refresh_token);
-
+  setInterval(() => {
+    console.log('interval set');
+  }, intervalTime);
 
 </script>
 <%- include('../partials/footer.ejs') %>
