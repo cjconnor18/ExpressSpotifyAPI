@@ -16,6 +16,7 @@
 
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
@@ -23,6 +24,15 @@
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
 
   setInterval(newAccessToken, intervalTime);
+  
+  window.onSpotifyWebPlaybackSDKReady = () => {
+    const player = new Spotify.Player({
+      name: 'JukeboxPlayer',
+      getOAuthToken: cb => { cb(access_token); }
+    });
+
+    player.connect();
+  };
 
   function newAccessToken() {
     $.ajax({
