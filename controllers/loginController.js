@@ -140,6 +140,16 @@ const login_playlists_get = (req, res) => {
 
 // will display a spotify player with tracks
 const login_player = (req, res) => {
+  let currentPlaylist = [];
+  class Track  {
+    constructor(name, artist, uriReference) {
+      this.name = name;
+      this.artist = artist;
+      this.uriReference = uriReference;
+    }
+  }
+
+
   const id = req.params.playlistId;
   let optionsTrackList = {
     url: 'https://api.spotify.com/v1/playlists/' + id + '/tracks',
@@ -147,6 +157,16 @@ const login_player = (req, res) => {
     json: true
   }
   request.get(optionsTrackList, (error, response, body) => {
+    
+    
+    for(let i = 0; i < body.items.length; i++) {
+      console.log(body.items[i].track.name,body.items[i].track.artists[0].name, body.items[i].track.uri);
+      let newTrack = new Track(body.items[i].track.name, body.items[i].track.artists[0].name, body.items[i].track.uri);
+      currentPlaylist.push(newTrack);
+      console.log(currentPlaylist.length);
+    }
+      
+    
     // body.items.forEach( track => {
     //   console.log(track.name)
     //   track.artists.forEach( artist => {
@@ -160,9 +180,10 @@ const login_player = (req, res) => {
     console.log(body.items[0].track.name);
     console.log(body.items[0].track.artists[0].name);
     console.log(body.items[0].track.duration_ms);
+    res.render('./login/player', { refresh_token, access_token, currentPlaylist });
   })
-  
-  res.render('./login/player', { refresh_token, access_token });
+  //moved into request.get so it would only render after completing list.
+  // res.render('./login/player', { refresh_token, access_token, currentPlaylist });
 };
 
 
