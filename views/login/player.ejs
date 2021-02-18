@@ -4,11 +4,11 @@
 
 <p>Welcome to the Player</p>
 
-<% if(currentPlaylist.length > 0) { %>
-  <% for (let i = 0; i < currentPlaylist.length; i++) { %>
+<% if(currentPlaylist.tracks.length > 0) { %>
+  <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
     <div class="track">
-      <p><%= currentPlaylist[i].name %> </p>
+      <p><%= currentPlaylist.tracks[i].name %> </p>
     </div>
     
   <% } %>

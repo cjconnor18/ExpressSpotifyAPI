@@ -2,6 +2,7 @@ const request  = require('request');
 const querystring = require('querystring');
 const secrets = require('../secrets');
 const Playlist = require('../models/playlist');
+const Track = require('../models/track');
 const generateRandomString = require('../miscFunctions').generateRandomString;
 const { get } = require('request');
 
@@ -10,7 +11,7 @@ const client_id = secrets.clientID;
 const client_secret = secrets.clientSecret;
 const redirect_uri = "http://localhost:3000/login/callback";
 let stateKey = 'spotify_auth_state';
-let listsOfPlaylists = [];
+let listsOfPlaylists = new Map();
 
 let access_token = "";
 let refresh_token = "";
@@ -89,7 +90,7 @@ const login_user = (req, res) => {
           // gets the first 50 playlists (number is set according to limit )
           request.get(optionsPlaylist, (error, response, body) => {
             body.items.forEach(playlist => {
-              listsOfPlaylists.push(new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
+              listsOfPlaylists.set(playlist.id, new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
             });
               
             //next playlist using the next url specified in the body
@@ -100,7 +101,7 @@ const login_user = (req, res) => {
                 json: true
               }, (error, response, body) => {
                 body.items.forEach(playlist => {
-                  listsOfPlaylists.push(new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
+                  listsOfPlaylists.set(playlist.id, new Playlist(playlist.id, playlist.name, playlist.description, playlist.tracks.total, playlist.tracks.href));
                 });
                 res.redirect('/login/playlists/#' +
                   querystring.stringify({
@@ -140,17 +141,9 @@ const login_playlists_get = (req, res) => {
 
 // will display a spotify player with tracks
 const login_player = (req, res) => {
-  let currentPlaylist = [];
-  class Track  {
-    constructor(name, artist, uriReference) {
-      this.name = name;
-      this.artist = artist;
-      this.uriReference = uriReference;
-    }
-  }
-
-
   const id = req.params.playlistId;
+  let currentPlaylist = listsOfPlaylists.get(id);
+    
   let optionsTrackList = {
     url: 'https://api.spotify.com/v1/playlists/' + id + '/tracks',
     headers: { 'Authorization': 'Bearer ' + access_token },
@@ -162,8 +155,9 @@ const login_player = (req, res) => {
     for(let i = 0; i < body.items.length; i++) {
       console.log(body.items[i].track.name,body.items[i].track.artists[0].name, body.items[i].track.uri);
       let newTrack = new Track(body.items[i].track.name, body.items[i].track.artists[0].name, body.items[i].track.uri);
-      currentPlaylist.push(newTrack);
-      console.log(currentPlaylist.length);
+      currentPlaylist.addTrack(newTrack);
+      
+      console.log(currentPlaylist.tracks.length);
     }
       
     

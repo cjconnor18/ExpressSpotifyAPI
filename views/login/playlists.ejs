@@ -5,7 +5,7 @@
 <p>Login Successful</p>
 <p>Please Select a Playlist</p>
 
-  <% if(playlists.length > 0) { %> 
+  <% if(playlists.size > 0) { %> 
     <% playlists.forEach(playlist => { %>
       <a href="/login/player/<%= playlist.id %>" > 
         <h3><%= playlist.name %></h3>
