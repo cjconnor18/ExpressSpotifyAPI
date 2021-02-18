@@ -4,6 +4,16 @@
 
 <p>Welcome to the Player</p>
 
+<% if(currentPlaylist.tracks.length > 0) { %>
+  <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
+    
+    <div class="track">
+      <p><%= currentPlaylist.tracks[i].name %> </p>
+    </div>
+    
+  <% } %>
+<% } %>
+
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script>
