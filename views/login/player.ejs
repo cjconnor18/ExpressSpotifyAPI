@@ -5,7 +5,7 @@
 <p>Welcome to the Player</p>
 
 
-
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
@@ -14,9 +14,22 @@
   console.log("____________________________________________________________________________");
   console.log("access_token" , access_token);
   console.log("refresh_token", refresh_token);
-  setInterval(() => {
-    console.log('interval set');
-  }, intervalTime);
+  setInterval(function() {
+            $.ajax({
+              url: '/login/refresh_token',
+              data: {
+                'refresh_token': refresh_token
+              }
+            }).done(function(data) {
+              access_token = data.access_token;
+              refresh_token = data.refresh_token;
+              
+              
+              console.log("access_token" , access_token);
+              console.log("refresh_token", refresh_token);
+          
+            });
+          }, intervalTime);
 
 </script>
 <%- include('../partials/footer.ejs') %>
