@@ -160,10 +160,9 @@ const login_player = (req, res) => {
     console.log(body.items[0].track.name);
     console.log(body.items[0].track.artists[0].name);
     console.log(body.items[0].track.duration_ms);
-    
   })
-
-  res.render('./login/player')
+  
+  res.render('./login/player', { refresh_token, access_token });
 };
 
 
@@ -184,9 +183,11 @@ const login_refreshToken = (req, res) => {
 
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
-      var access_token = body.access_token;
+      access_token = body.access_token;
+      
       res.send({
-        'access_token': access_token
+        'access_token': access_token,
+        'refresh_token': refresh_token
       });
     }
   });
