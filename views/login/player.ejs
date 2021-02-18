@@ -11,25 +11,22 @@
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
   let intervalTimeMinutes = .5;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
-  console.log("____________________________________________________________________________");
-  console.log("access_token" , access_token);
-  console.log("refresh_token", refresh_token);
-  setInterval(function() {
-            $.ajax({
-              url: '/login/refresh_token',
-              data: {
-                'refresh_token': refresh_token
-              }
-            }).done(function(data) {
-              access_token = data.access_token;
-              refresh_token = data.refresh_token;
-              
-              
-              console.log("access_token" , access_token);
-              console.log("refresh_token", refresh_token);
-          
-            });
-          }, intervalTime);
+
+  setInterval(newAccessToken, intervalTime);
+
+  function newAccessToken() {
+    $.ajax({
+      url: '/login/refresh_token',
+      data: {
+        'refresh_token': refresh_token
+      }
+    }).done(function(data) {
+      access_token = data.access_token;
+
+    }).fail(function(err) {
+      console.log(err);
+    });
+  }
 
 </script>
 <%- include('../partials/footer.ejs') %>
