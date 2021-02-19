@@ -24,7 +24,7 @@
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
   const playButton = document.getElementById('play');
-  playButton.addEventListener("click", startPlay(current_device_id, "spotify:track:79LdvxXi5JYUjhnO7v9Fi3"));
+  
 
   setInterval(newAccessToken, intervalTime);
   
@@ -47,6 +47,7 @@
     player.addListener('ready', ({ device_id }) => {
       current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
+      playButton.addEventListener('click', startPlay(current_device_id,"spotify:track:79LdvxXi5JYUjhnO7v9Fi3"));
     });
 
     // Not Ready
@@ -54,16 +55,21 @@
       console.log('Device ID has gone offline', device_id);
     });
 
+
     player.connect();
   };
 
-  function startPlay(currentPlayerId, startTrack){
+
+
+
+  function startPlay(currentPlayerId, startTrackURI){
+    console.log('clicked');
     $.ajax({
       url: '/login/play',
       data: {
         'access_token': access_token,
         'device_id': current_device_id,
-        'startTrack': startTrack
+        'startTrackURI': startTrackURI
       }
     })
 

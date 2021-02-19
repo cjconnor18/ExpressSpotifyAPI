@@ -209,12 +209,13 @@ const login_refreshToken = (req, res) => {
 };
 
 const login_play = (req, res) => {
+  console.log("you rang");
   let authOptions = {
-    url: `https://api.spotify.com/v1/me/player/play?device_id=${body.device_id}`,
+    url: `https://api.spotify.com/v1/me/player/play?device_id=${req.query.device_id}`,
     headers: {
-      'Authorization': 'Bearer ' + body.access_token
+      'Authorization': 'Bearer ' + req.query.access_token
     },
-    data: JSON.stringify({ 'uris': [spotify_uri] }),
+    data: JSON.stringify({ 'uris': [req.query.startTrackURI.toString()] }),
     json: true
 
   }
