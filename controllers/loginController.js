@@ -25,7 +25,7 @@ const login_login = (req, res) => {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email streaming';
+  var scope = 'user-read-private user-read-email streaming user-modify-playback-state';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -208,6 +208,29 @@ const login_refreshToken = (req, res) => {
   });
 };
 
+const login_play = (req, res) => {
+  let authOptions = {
+    url: `https://api.spotify.com/v1/me/player/play?device_id=${body.device_id}`,
+    headers: {
+      'Authorization': 'Bearer ' + body.access_token
+    },
+    data: JSON.stringify({ 'uris': [spotify_uri] }),
+    json: true
+
+  }
+
+  request.put(authOptions, (err, response, body) => {
+    if(err) {
+      console.log(err);
+    }
+  });
+
+
+
+
+
+}
+
 
 module.exports = {
   login_index,
@@ -215,5 +238,6 @@ module.exports = {
   login_user,
   login_playlists_get,
   login_refreshToken, 
-  login_player
+  login_player,
+  login_play
 };

@@ -3,7 +3,7 @@
 <%- include('../partials/nav.ejs') %>
 
 <p>Welcome to the Player</p>
-
+<p id='play'>Play now</p>
 <% if(currentPlaylist.tracks.length > 0) { %>
   <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
@@ -22,10 +22,14 @@
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
+  let current_device_id = 0;
+  const playButton = document.getElementById('play');
+  playButton.addEventListener("click", startPlay(current_device_id, "spotify:track:79LdvxXi5JYUjhnO7v9Fi3"));
 
   setInterval(newAccessToken, intervalTime);
   
   window.onSpotifyWebPlaybackSDKReady = () => {
+    
     const player = new Spotify.Player({
       name: 'JukeboxPlayer',
       getOAuthToken: cb => { cb(access_token); }
@@ -41,6 +45,7 @@
 
     // Ready
     player.addListener('ready', ({ device_id }) => {
+      current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
     });
 
@@ -51,6 +56,18 @@
 
     player.connect();
   };
+
+  function startPlay(currentPlayerId, startTrack){
+    $.ajax({
+      url: '/login/play',
+      data: {
+        'access_token': access_token,
+        'device_id': current_device_id,
+        'startTrack': startTrack
+      }
+    })
+
+  }
 
   function newAccessToken() {
     $.ajax({
