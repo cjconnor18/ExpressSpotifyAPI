@@ -8,7 +8,9 @@
   <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
     <div class="track">
-      <p><%= currentPlaylist.tracks[i].name %> </p>
+      <p><%= currentPlaylist.tracks[i].name %></p>
+      <p><%= currentPlaylist.tracks[i].artist %></p>
+      <p><%= currentPlaylist.tracks[i].uriReference %></p>
     </div>
     
   <% } %>
@@ -74,6 +76,7 @@
     })
 
   }
+
 
   function newAccessToken() {
     $.ajax({
