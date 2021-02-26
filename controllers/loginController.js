@@ -228,12 +228,27 @@ const login_play = (req, res) => {
       console.log(err);
     }
   });
-
-
-
-
-
 }
+
+const login_addToQueue = (req, res) => {
+  let authOptions = {
+    url: `https://api.spotify.com/v1/me/player/queue?uri=${req.query.uriReference}`,
+    headers: {
+      'Authorization': 'Bearer ' + req.query.access_token,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  }
+  console.log('processing');
+  request.post(authOptions, (err, response, body) => {
+    if(err) {
+      console.log(err);
+    }
+    
+  });
+  
+};
+
 
 
 module.exports = {
@@ -243,5 +258,6 @@ module.exports = {
   login_playlists_get,
   login_refreshToken, 
   login_player,
-  login_play
+  login_play,
+  login_addToQueue
 };

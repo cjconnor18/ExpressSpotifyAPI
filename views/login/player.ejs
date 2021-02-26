@@ -45,7 +45,13 @@
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
     // Playback status updates
-    player.addListener('player_state_changed', state => { console.log(state); });
+    player.addListener('player_state_changed', state => { 
+      console.log(state.track_window); 
+      if(state.track_window.next_tracks.length === 0) {
+        console.log('need more tracks');
+        addToQueue();
+      }
+    });
   
     // Ready
     player.addListener('ready', ({ device_id }) => {
@@ -82,13 +88,16 @@
         'startTrackURI': startTrackURI
       }
     }).done( () => {
-      last5TracksPlayed.push(currentPlaylist.tracks[randomIndex].uriReference);
-      if(last5TracksPlayed.length > 5) {
+      
+    }).fail(function(err) {
+      console.log(err);
+    });
+    last5TracksPlayed.push(startTrackURI);
+    if(last5TracksPlayed.length > 5) {
         last5TracksPlayed.shift();
-      }
-      console.log(last5TracksPlayed);
-    })
-
+    }
+    console.log('its done');
+    console.log(last5TracksPlayed);
   }
   
   function randomSong() {
@@ -99,11 +108,29 @@
       return currentPlaylist.tracks[randomIndex].uriReference;
     } 
     for(let i = 0; i < last5TracksPlayed.length; i++) {
-      if(last5TracksPlayed[i] = currentPlaylist.tracks[randomIndex].uriReference) {
+      if(last5TracksPlayed[i] === currentPlaylist.tracks[randomIndex].uriReference) {
         return randomSong();
       }
     }
     return currentPlaylist.tracks[randomIndex].uriReference;
+  }
+
+  function addToQueue() {
+    let nextTrack = randomSong();
+    console.log('added to queue');
+
+    $.ajax({
+      url: '/login/addToQueue',
+      data: {
+        'access_token': access_token,
+        'uriReference': nextTrack
+      }
+    }).done(function(data) {
+      
+
+    }).fail(function(err) {
+      console.log(err);
+    });
   }
 
   function newAccessToken() {
