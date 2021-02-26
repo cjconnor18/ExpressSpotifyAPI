@@ -5,6 +5,7 @@ const Playlist = require('../models/playlist');
 const Track = require('../models/track');
 const generateRandomString = require('../miscFunctions').generateRandomString;
 const { get } = require('request');
+const { json } = require('express');
 
 
 const client_id = secrets.clientID;
@@ -25,7 +26,7 @@ const login_login = (req, res) => {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email streaming user-modify-playback-state';
+  var scope = 'user-read-private user-read-email streaming user-modify-playback-state user-read-currently-playing user-read-playback-state';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -213,16 +214,21 @@ const login_play = (req, res) => {
   let authOptions = {
     url: `https://api.spotify.com/v1/me/player/play?device_id=${req.query.device_id}`,
     headers: {
-      'Authorization': 'Bearer ' + req.query.access_token
+      'Authorization': 'Bearer ' + req.query.access_token,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
     },
-    data: JSON.stringify({ 'uris': [req.query.startTrackURI.toString()] }),
-    json: true
+
+    body: JSON.stringify({ 'uris': [req.query.startTrackURI.toString()] }) 
 
   }
 
   request.put(authOptions, (err, response, body) => {
     if(err) {
       console.log(err);
+    } else {
+      console.log(response);
+      console.log(body);
     }
   });
 

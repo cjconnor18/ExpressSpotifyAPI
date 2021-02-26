@@ -47,7 +47,7 @@
     player.addListener('ready', ({ device_id }) => {
       current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
-      playButton.addEventListener('click', startPlay(current_device_id,"spotify:track:79LdvxXi5JYUjhnO7v9Fi3"));
+      playButton.addEventListener('click', () => startPlay(current_device_id,"spotify:track:79LdvxXi5JYUjhnO7v9Fi3"),false);
     });
 
     // Not Ready
