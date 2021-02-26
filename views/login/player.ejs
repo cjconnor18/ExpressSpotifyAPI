@@ -3,12 +3,12 @@
 <%- include('../partials/nav.ejs') %>
 
 <p>Welcome to the Player</p>
-<p id='play'>Play now</p>
+<p id='play'>Play Random Now</p>
 <% if(currentPlaylist.tracks.length > 0) { %>
   <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
     <div class="track">
-      <p><%= currentPlaylist.tracks[i].name %></p>
+      <p><%= i+1 %>) <%= currentPlaylist.tracks[i].name %></p>
       <p><%= currentPlaylist.tracks[i].artist %></p>
       <p><%= currentPlaylist.tracks[i].uriReference %></p>
     </div>
@@ -22,6 +22,8 @@
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
+  let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
+  let last5TracksPlayed = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
@@ -44,12 +46,12 @@
 
     // Playback status updates
     player.addListener('player_state_changed', state => { console.log(state); });
-
+  
     // Ready
     player.addListener('ready', ({ device_id }) => {
       current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
-      playButton.addEventListener('click', () => startPlay(current_device_id,"spotify:track:79LdvxXi5JYUjhnO7v9Fi3"),false);
+      playButton.addEventListener('click', () => startPlay(current_device_id,'random'),false);
     });
 
     // Not Ready
@@ -65,7 +67,13 @@
 
 
   function startPlay(currentPlayerId, startTrackURI){
+    if(startTrackURI === 'random') {
+      startTrackURI = randomSong();
+    } else {
+      console.log('not Random');
+    }
     console.log('clicked');
+
     $.ajax({
       url: '/login/play',
       data: {
@@ -73,10 +81,30 @@
         'device_id': current_device_id,
         'startTrackURI': startTrackURI
       }
+    }).done( () => {
+      last5TracksPlayed.push(currentPlaylist.tracks[randomIndex].uriReference);
+      if(last5TracksPlayed.length > 5) {
+        last5TracksPlayed.shift();
+      }
+      console.log(last5TracksPlayed);
     })
 
   }
-
+  
+  function randomSong() {
+    let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
+    console.log(randomIndex);
+    startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    if(last5TracksPlayed.length < 0) {
+      return currentPlaylist.tracks[randomIndex].uriReference;
+    } 
+    for(let i = 0; i < last5TracksPlayed.length; i++) {
+      if(last5TracksPlayed[i] = currentPlaylist.tracks[randomIndex].uriReference) {
+        return randomSong();
+      }
+    }
+    return currentPlaylist.tracks[randomIndex].uriReference;
+  }
 
   function newAccessToken() {
     $.ajax({
