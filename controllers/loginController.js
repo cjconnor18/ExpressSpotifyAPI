@@ -226,6 +226,11 @@ const login_play = (req, res) => {
   request.put(authOptions, (err, response, body) => {
     if(err) {
       console.log(err);
+    } else {
+      console.log('yes it is completed');
+      res.send( {
+        'completed' : 'true'
+      })
     }
   });
 }
@@ -243,7 +248,12 @@ const login_addToQueue = (req, res) => {
   request.post(authOptions, (err, response, body) => {
     if(err) {
       console.log(err);
+    } else {
+      res.send({
+        'completed':'true'
+      });
     }
+    
     
   });
   

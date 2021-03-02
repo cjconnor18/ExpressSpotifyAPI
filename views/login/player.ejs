@@ -23,6 +23,7 @@
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
   let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
+  let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
@@ -48,8 +49,14 @@
     player.addListener('player_state_changed', state => { 
       console.log(state.track_window); 
       if(state.track_window.next_tracks.length === 0) {
-        console.log('need more tracks');
-        addToQueue();
+        if(!currentlyAddingTrack) {
+          currentlyAddingTrack = true;
+          console.log('need more tracks');
+          addToQueue();
+        } else {
+          console.log('already in process to add track');
+        }
+        
       }
     });
   
@@ -88,16 +95,20 @@
         'startTrackURI': startTrackURI
       }
     }).done( () => {
-      
+      console.log('start play made it here in the done function');
+      last5TracksPlayed.push(startTrackURI);
+      if(last5TracksPlayed.length > 5) {
+        last5TracksPlayed.shift();
+      }
+      console.log('its done in done function');
+      console.log(last5TracksPlayed);
+
+
+
     }).fail(function(err) {
       console.log(err);
     });
-    last5TracksPlayed.push(startTrackURI);
-    if(last5TracksPlayed.length > 5) {
-        last5TracksPlayed.shift();
-    }
-    console.log('its done');
-    console.log(last5TracksPlayed);
+    
   }
   
   function randomSong() {
@@ -126,7 +137,7 @@
         'uriReference': nextTrack
       }
     }).done(function(data) {
-      
+      currentlyAddingTrack = false;
 
     }).fail(function(err) {
       console.log(err);
@@ -134,6 +145,7 @@
   }
 
   function newAccessToken() {
+    
     $.ajax({
       url: '/login/refresh_token',
       data: {
@@ -141,6 +153,7 @@
       }
     }).done(function(data) {
       access_token = data.access_token;
+      
 
     }).fail(function(err) {
       console.log(err);
