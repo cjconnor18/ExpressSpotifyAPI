@@ -25,6 +25,7 @@
   let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
+  const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
@@ -96,12 +97,8 @@
         'startTrackURI': startTrackURI
       }
     }).done( () => {
-      console.log('start play made it here in the done function');
       last5TracksPlayed.push(startTrackURI);
       currentlyAddingTrack = false;
-      console.log(last5TracksPlayed);
-
-
 
     }).fail(function(err) {
       console.log(err);
@@ -111,23 +108,20 @@
 
   function isLastFiveSongsPlayed(songURI) {
     if(last5TracksPlayed.length < 1) {
-      console.log('length less than 1');
       return false;
     }
-    for (let i = 0; i < last5TracksPlayed; i++) {
-      if(last5TracksPlayed[i] === songURI) {
+    console.log(last5TracksPlayed[0]);
+    for (let i = 0; i < last5TracksPlayed.length; i++) {
+      if(last5TracksPlayed[i] == songURI) {
         console.log('track is listed in last 5 tracks');
         return true;
       }
-      console.log('track not listed');
     }
-    console.log('false');
     return false;
   }
   
   function randomSong() {
     let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
-    console.log(randomIndex);
     startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
     let isLastFive = isLastFiveSongsPlayed(startTrackURI);
     if(isLastFive) {
@@ -151,13 +145,12 @@
         'uriReference': songURI
       }
     }).done(function(data) {
-      currentlyAddingTrack = false;
       console.log('added ' + songURI);
       last5TracksPlayed.push(songURI);
-      if(last5TracksPlayed.length > 5) {
+      if(last5TracksPlayed.length > last5MaxLength) {
         last5TracksPlayed.shift();
       }
-      console.log('last 5 played: ' + last5TracksPlayed);
+      currentlyAddingTrack = false;
 
     }).fail(function(err) {
       console.log(err);
