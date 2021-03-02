@@ -26,6 +26,7 @@
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
   const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
+  let nextUpList = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
@@ -53,8 +54,9 @@
       if(state.track_window.next_tracks.length === 0) {
         if(!currentlyAddingTrack) {
           currentlyAddingTrack = true;
+          console.log('changed to true on line 57');
           console.log('need more tracks');
-          addToQueue();
+          findNextSong();
         } else {
           console.log('already in process to add track');
         }
@@ -83,14 +85,43 @@
     if(!isPlayerPlaying) {
       startPlay(songURI);
     } else {
-      currentlyAddingTrack = true;
-      addToQueue(songURI);
+      addSongToNextUp(songURI);
     }
+  }
+
+  function addSongToNextUp(songURI) {
+    nextUpList.push(songURI);
+    console.log(nextUpList);
+  }
+
+  function removeSongFromNextUp (songURI) {
+    let indexOfSong = nextUpList.indexOf(songURI);
+    nextUpList.splice(indexOfSong,1);
+    console.log(nextUpList);
+  }
+
+  function findNextSong() {
+    console.log(nextUpList);
+    for(let i = 0; i < nextUpList.length; i++) {
+      let matches = 0;
+      for(let j = 0; j < last5TracksPlayed.length; j++) {
+        if(nextUpList[i] === last5TracksPlayed[j]) {
+          matches++;
+        }
+      }
+      
+
+      if(matches === 0) {
+        return addToQueue(nextUpList[i]);
+      }
+    }
+    return addToQueue();
   }
 
 
   function startPlay(startTrackURI,currentPlayerId = current_device_id){
     currentlyAddingTrack = true;
+    console.log('changed to true on line 123');
     if(startTrackURI === 'random') {
       startTrackURI = randomSong();
     } else {
@@ -108,6 +139,7 @@
     }).done( () => {
       last5TracksPlayed.push(startTrackURI);
       currentlyAddingTrack = false;
+      console.log('changed to false on line 141');
       isPlayerPlaying = true;
 
     }).fail(function(err) {
@@ -142,7 +174,9 @@
   }
 
   function addToQueue(songURI = 'random') {
+    let wasRandom = false;
     if(songURI === 'random') {
+      wasRandom = true;
       songURI = randomSong();
     }
     
@@ -160,7 +194,11 @@
       if(last5TracksPlayed.length > last5MaxLength) {
         last5TracksPlayed.shift();
       }
+      if(!wasRandom) {
+        removeSongFromNextUp(songURI);
+      }
       currentlyAddingTrack = false;
+      console.log('changed to false on line 200');
 
     }).fail(function(err) {
       console.log(err);
