@@ -7,7 +7,7 @@
 <% if(currentPlaylist.tracks.length > 0) { %>
   <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
-    <div class="track">
+    <div class="track" onclick="addSong( '<%= currentPlaylist.tracks[i].uriReference %>' )">
       <p><%= i+1 %>) <%= currentPlaylist.tracks[i].name %></p>
       <p><%= currentPlaylist.tracks[i].artist %></p>
       <p><%= currentPlaylist.tracks[i].uriReference %></p>
@@ -30,6 +30,7 @@
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
   const playButton = document.getElementById('play');
+  let isPlayerPlaying = false;
   
 
   setInterval(newAccessToken, intervalTime);
@@ -65,22 +66,30 @@
     player.addListener('ready', ({ device_id }) => {
       current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
-      playButton.addEventListener('click', () => startPlay(current_device_id,'random'),false);
+      playButton.addEventListener('click', () => startPlay('random', current_device_id),false);
     });
 
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
       console.log('Device ID has gone offline', device_id);
+      isPlayerPlaying = false;
     });
 
 
     player.connect();
   };
 
+  function addSong(songURI) {
+    if(!isPlayerPlaying) {
+      startPlay(songURI);
+    } else {
+      currentlyAddingTrack = true;
+      addToQueue(songURI);
+    }
+  }
 
 
-
-  function startPlay(currentPlayerId, startTrackURI){
+  function startPlay(startTrackURI,currentPlayerId = current_device_id){
     currentlyAddingTrack = true;
     if(startTrackURI === 'random') {
       startTrackURI = randomSong();
@@ -99,6 +108,7 @@
     }).done( () => {
       last5TracksPlayed.push(startTrackURI);
       currentlyAddingTrack = false;
+      isPlayerPlaying = true;
 
     }).fail(function(err) {
       console.log(err);
