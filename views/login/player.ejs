@@ -80,6 +80,7 @@
 
 
   function startPlay(currentPlayerId, startTrackURI){
+    currentlyAddingTrack = true;
     if(startTrackURI === 'random') {
       startTrackURI = randomSong();
     } else {
@@ -97,10 +98,7 @@
     }).done( () => {
       console.log('start play made it here in the done function');
       last5TracksPlayed.push(startTrackURI);
-      if(last5TracksPlayed.length > 5) {
-        last5TracksPlayed.shift();
-      }
-      console.log('its done in done function');
+      currentlyAddingTrack = false;
       console.log(last5TracksPlayed);
 
 
@@ -110,34 +108,56 @@
     });
     
   }
+
+  function isLastFiveSongsPlayed(songURI) {
+    if(last5TracksPlayed.length < 1) {
+      console.log('length less than 1');
+      return false;
+    }
+    for (let i = 0; i < last5TracksPlayed; i++) {
+      if(last5TracksPlayed[i] === songURI) {
+        console.log('track is listed in last 5 tracks');
+        return true;
+      }
+      console.log('track not listed');
+    }
+    console.log('false');
+    return false;
+  }
   
   function randomSong() {
     let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
     console.log(randomIndex);
     startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
-    if(last5TracksPlayed.length < 0) {
-      return currentPlaylist.tracks[randomIndex].uriReference;
-    } 
-    for(let i = 0; i < last5TracksPlayed.length; i++) {
-      if(last5TracksPlayed[i] === currentPlaylist.tracks[randomIndex].uriReference) {
-        return randomSong();
-      }
+    let isLastFive = isLastFiveSongsPlayed(startTrackURI);
+    if(isLastFive) {
+      return randomSong();
+    } else {
+      return startTrackURI;
     }
-    return currentPlaylist.tracks[randomIndex].uriReference;
   }
 
-  function addToQueue() {
-    let nextTrack = randomSong();
+  function addToQueue(songURI = 'random') {
+    if(songURI === 'random') {
+      songURI = randomSong();
+    }
+    
     console.log('added to queue');
 
     $.ajax({
       url: '/login/addToQueue',
       data: {
         'access_token': access_token,
-        'uriReference': nextTrack
+        'uriReference': songURI
       }
     }).done(function(data) {
       currentlyAddingTrack = false;
+      console.log('added ' + songURI);
+      last5TracksPlayed.push(songURI);
+      if(last5TracksPlayed.length > 5) {
+        last5TracksPlayed.shift();
+      }
+      console.log('last 5 played: ' + last5TracksPlayed);
 
     }).fail(function(err) {
       console.log(err);
