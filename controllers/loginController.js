@@ -154,11 +154,11 @@ const login_player = (req, res) => {
     
     
     for(let i = 0; i < body.items.length; i++) {
-      console.log(body.items[i].track.name,body.items[i].track.artists[0].name, body.items[i].track.uri);
+      // console.log(body.items[i].track.name,body.items[i].track.artists[0].name, body.items[i].track.uri);
       let newTrack = new Track(body.items[i].track.name, body.items[i].track.artists[0].name, body.items[i].track.uri);
       currentPlaylist.addTrack(newTrack);
       
-      console.log(currentPlaylist.tracks.length);
+      // console.log(currentPlaylist.tracks.length);
     }
       
     
@@ -168,13 +168,13 @@ const login_player = (req, res) => {
     //     console.log(artist);
     //   })
     // })
-    console.log(body.items[0]);
-    console.log(' ');
-    console.log('-----------------------------------------');
-    console.log(' ');
-    console.log(body.items[0].track.name);
-    console.log(body.items[0].track.artists[0].name);
-    console.log(body.items[0].track.duration_ms);
+    // console.log(body.items[0]);
+    // console.log(' ');
+    // console.log('-----------------------------------------');
+    // console.log(' ');
+    // console.log(body.items[0].track.name);
+    // console.log(body.items[0].track.artists[0].name);
+    // console.log(body.items[0].track.duration_ms);
     res.render('./login/player', { refresh_token, access_token, currentPlaylist });
   })
   //moved into request.get so it would only render after completing list.
@@ -227,16 +227,38 @@ const login_play = (req, res) => {
     if(err) {
       console.log(err);
     } else {
-      console.log(response);
-      console.log(body);
+      console.log('yes it is completed');
+      res.send( {
+        'completed' : 'true'
+      })
     }
   });
-
-
-
-
-
 }
+
+const login_addToQueue = (req, res) => {
+  let authOptions = {
+    url: `https://api.spotify.com/v1/me/player/queue?uri=${req.query.uriReference}`,
+    headers: {
+      'Authorization': 'Bearer ' + req.query.access_token,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  }
+  console.log('processing');
+  request.post(authOptions, (err, response, body) => {
+    if(err) {
+      console.log(err);
+    } else {
+      res.send({
+        'completed':'true'
+      });
+    }
+    
+    
+  });
+  
+};
+
 
 
 module.exports = {
@@ -246,5 +268,6 @@ module.exports = {
   login_playlists_get,
   login_refreshToken, 
   login_player,
-  login_play
+  login_play,
+  login_addToQueue
 };

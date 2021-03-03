@@ -3,12 +3,12 @@
 <%- include('../partials/nav.ejs') %>
 
 <p>Welcome to the Player</p>
-<p id='play'>Play now</p>
+<p id='play'>Play Random Now</p>
 <% if(currentPlaylist.tracks.length > 0) { %>
   <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
     
-    <div class="track">
-      <p><%= currentPlaylist.tracks[i].name %></p>
+    <div class="track" onclick="addSong( '<%= currentPlaylist.tracks[i].uriReference %>' )">
+      <p><%= i+1 %>) <%= currentPlaylist.tracks[i].name %></p>
       <p><%= currentPlaylist.tracks[i].artist %></p>
       <p><%= currentPlaylist.tracks[i].uriReference %></p>
     </div>
@@ -22,10 +22,16 @@
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
+  let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
+  let currentlyAddingTrack = false;
+  let last5TracksPlayed = [];
+  const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
+  let nextUpList = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
   let current_device_id = 0;
   const playButton = document.getElementById('play');
+  let isPlayerPlaying = false;
   
 
   setInterval(newAccessToken, intervalTime);
@@ -43,29 +49,86 @@
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
     // Playback status updates
-    player.addListener('player_state_changed', state => { console.log(state); });
-
+    player.addListener('player_state_changed', state => { 
+      console.log(state.track_window); 
+      if(state.track_window.next_tracks.length === 0) {
+        if(!currentlyAddingTrack) {
+          currentlyAddingTrack = true;
+          console.log('changed to true on line 57');
+          console.log('need more tracks');
+          findNextSong();
+        } else {
+          console.log('already in process to add track');
+        }
+        
+      }
+    });
+  
     // Ready
     player.addListener('ready', ({ device_id }) => {
       current_device_id = device_id;
       console.log('Ready with Device ID', device_id);
-      playButton.addEventListener('click', () => startPlay(current_device_id,"spotify:track:79LdvxXi5JYUjhnO7v9Fi3"),false);
+      playButton.addEventListener('click', () => startPlay('random', current_device_id),false);
     });
 
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
       console.log('Device ID has gone offline', device_id);
+      isPlayerPlaying = false;
     });
 
 
     player.connect();
   };
 
+  function addSong(songURI) {
+    if(!isPlayerPlaying) {
+      startPlay(songURI);
+    } else {
+      addSongToNextUp(songURI);
+    }
+  }
+
+  function addSongToNextUp(songURI) {
+    nextUpList.push(songURI);
+    console.log(nextUpList);
+  }
+
+  function removeSongFromNextUp (songURI) {
+    let indexOfSong = nextUpList.indexOf(songURI);
+    nextUpList.splice(indexOfSong,1);
+    console.log(nextUpList);
+  }
+
+  function findNextSong() {
+    console.log(nextUpList);
+    for(let i = 0; i < nextUpList.length; i++) {
+      let matches = 0;
+      for(let j = 0; j < last5TracksPlayed.length; j++) {
+        if(nextUpList[i] === last5TracksPlayed[j]) {
+          matches++;
+        }
+      }
+      
+
+      if(matches === 0) {
+        return addToQueue(nextUpList[i]);
+      }
+    }
+    return addToQueue();
+  }
 
 
-
-  function startPlay(currentPlayerId, startTrackURI){
+  function startPlay(startTrackURI,currentPlayerId = current_device_id){
+    currentlyAddingTrack = true;
+    console.log('changed to true on line 123');
+    if(startTrackURI === 'random') {
+      startTrackURI = randomSong();
+    } else {
+      console.log('not Random');
+    }
     console.log('clicked');
+
     $.ajax({
       url: '/login/play',
       data: {
@@ -73,12 +136,77 @@
         'device_id': current_device_id,
         'startTrackURI': startTrackURI
       }
-    })
+    }).done( () => {
+      last5TracksPlayed.push(startTrackURI);
+      currentlyAddingTrack = false;
+      console.log('changed to false on line 141');
+      isPlayerPlaying = true;
 
+    }).fail(function(err) {
+      console.log(err);
+    });
+    
   }
 
+  function isLastFiveSongsPlayed(songURI) {
+    if(last5TracksPlayed.length < 1) {
+      return false;
+    }
+    console.log(last5TracksPlayed[0]);
+    for (let i = 0; i < last5TracksPlayed.length; i++) {
+      if(last5TracksPlayed[i] == songURI) {
+        console.log('track is listed in last 5 tracks');
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function randomSong() {
+    let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
+    startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    let isLastFive = isLastFiveSongsPlayed(startTrackURI);
+    if(isLastFive) {
+      return randomSong();
+    } else {
+      return startTrackURI;
+    }
+  }
+
+  function addToQueue(songURI = 'random') {
+    let wasRandom = false;
+    if(songURI === 'random') {
+      wasRandom = true;
+      songURI = randomSong();
+    }
+    
+    console.log('added to queue');
+
+    $.ajax({
+      url: '/login/addToQueue',
+      data: {
+        'access_token': access_token,
+        'uriReference': songURI
+      }
+    }).done(function(data) {
+      console.log('added ' + songURI);
+      last5TracksPlayed.push(songURI);
+      if(last5TracksPlayed.length > last5MaxLength) {
+        last5TracksPlayed.shift();
+      }
+      if(!wasRandom) {
+        removeSongFromNextUp(songURI);
+      }
+      currentlyAddingTrack = false;
+      console.log('changed to false on line 200');
+
+    }).fail(function(err) {
+      console.log(err);
+    });
+  }
 
   function newAccessToken() {
+    
     $.ajax({
       url: '/login/refresh_token',
       data: {
@@ -86,6 +214,7 @@
       }
     }).done(function(data) {
       access_token = data.access_token;
+      
 
     }).fail(function(err) {
       console.log(err);
