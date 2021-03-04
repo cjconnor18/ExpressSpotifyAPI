@@ -41,9 +41,9 @@
           </div>
           <% displayNum++; %>
           <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
-            <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
-              <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
-              <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
+            <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %>' )">
+              <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %></p>
+              <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %></p>
             </div>
           <% } else { %>
             <div>
@@ -101,7 +101,6 @@
       if(state.track_window.next_tracks.length === 0) {
         if(!currentlyAddingTrack) {
           currentlyAddingTrack = true;
-          console.log('changed to true on line 57');
           console.log('need more tracks');
           findNextSong();
         } else {
@@ -168,7 +167,6 @@
 
   function startPlay(startTrackURI,currentPlayerId = current_device_id){
     currentlyAddingTrack = true;
-    console.log('changed to true on line 123');
     if(startTrackURI === 'random') {
       startTrackURI = randomSong();
     } else {
@@ -186,7 +184,6 @@
     }).done( () => {
       last5TracksPlayed.push(startTrackURI);
       currentlyAddingTrack = false;
-      console.log('changed to false on line 141');
       isPlayerPlaying = true;
 
     }).fail(function(err) {
@@ -218,9 +215,9 @@
     let firstOrSecondTrack = Math.floor(Math.random() * 2);
     let startTrackURI;
     if(firstOrSecondTrack === 0 ) {
-      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.track1.uriReference;
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks[thirdRandomIndex].track1.uriReference;
     } else {
-      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.track2.uriReference;
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks[thirdRandomIndex].track2.uriReference;
     }
     let isLastFive = isLastFiveSongsPlayed(startTrackURI);
     if(isLastFive) {
@@ -255,7 +252,6 @@
         removeSongFromNextUp(songURI);
       }
       currentlyAddingTrack = false;
-      console.log('changed to false on line 200');
 
     }).fail(function(err) {
       console.log(err);

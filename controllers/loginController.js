@@ -177,7 +177,6 @@ const login_player = (req, res) => {
     // console.log(body.items[0].track.name);
     // console.log(body.items[0].track.artists[0].name);
     // console.log(body.items[0].track.duration_ms);
-    console.log(currentAllTracks.pages[0].sections[0].twoTracks[0]);
     res.render('./login/player', { refresh_token, access_token, currentAllTracks });
   })
   //moved into request.get so it would only render after completing list.
