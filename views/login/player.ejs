@@ -4,15 +4,57 @@
 
 <p>Welcome to the Player</p>
 <p id='play'>Play Random Now</p>
-<% if(currentPlaylist.tracks.length > 0) { %>
-  <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
-    
-    <div class="track" onclick="addSong( '<%= currentPlaylist.tracks[i].uriReference %>' )">
-      <p><%= i+1 %>) <%= currentPlaylist.tracks[i].name %></p>
-      <p><%= currentPlaylist.tracks[i].artist %></p>
-      <p><%= currentPlaylist.tracks[i].uriReference %></p>
-    </div>
-    
+<% if(currentAllTracks.pages.length > 0) { %> 
+  <p>No register in the currentAllTracks below</p>
+<% } %> 
+
+<% if(currentAllTracks.pages.length > 0) { %>
+  <% for (let i = 0; i < currentAllTracks.pages.length; i++) { %>
+    <% let pageNum = i; %>
+    <% for (let j = 0; j < currentAllTracks.pages[i].sections.length; j++)  { %>
+      <% let sectionNum = j; 
+       let displayLetter;
+       let diplayNum = 1; 
+       switch (sectionNum) { 
+        case 0: 
+          displayLetter = 'A'; 
+          break; 
+        case 1: 
+          displayLetter = 'B'; 
+          break; 
+        case 2: 
+          displayLetter = 'C';
+          break; 
+        case 3: 
+          displayLetter = 'D'; 
+          break; 
+        default: 
+          displayLetter = 'ZZZZ'; 
+       } %> 
+      <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].length; k++) { %>
+        <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
+          <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
+          <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.artist %></p>
+          <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
+        </div>
+        <div class="artist">
+          <p><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
+        </div>
+        <% displayNum++; %>
+        <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
+          <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
+            <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
+            <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.artist %></p>
+            <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
+          </div>
+        <% } else { %>
+          <div>
+            <p>No Other Track for Artist</p>  
+          </div>
+        <% } %>  
+        <% displayNum++; %>
+      <% } %>
+    <% } %>
   <% } %>
 <% } %>
 
@@ -22,10 +64,12 @@
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
-  let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
+  let currentPlaylist = <%- JSON.stringify(currentAllTracks) %>;
+  let currentAllTracks = <%- JSON.stringify(currentAllTracks) %>;
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
-  const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
+  const last5MaxLength = 1;
+  // const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
   let nextUpList = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
@@ -163,8 +207,18 @@
   }
   
   function randomSong() {
-    let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
-    startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    //let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
+    //startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    let firstRandomIndex = Math.floor(Math.random() * currentAllTracks.pages.length);
+    let secondRandomIndex = Math.floor(Math.random() * currentAllTracks.pages[firstRandomIndex].sections.length);
+    let thirdRandomIndex = Math.floor(Math.random() * currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.length);
+    let firstOrSecondTrack = Math.floor(Math.random() * 2);
+    let startTrackURI;
+    if(firstOrSecondTrack === 0 ) {
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.track1.uriReference;
+    } else {
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.track2.uriReference;
+    }
     let isLastFive = isLastFiveSongsPlayed(startTrackURI);
     if(isLastFive) {
       return randomSong();

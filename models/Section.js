@@ -1,4 +1,4 @@
-const TwoTrack = require('TwoTracks');
+const TwoTrack = require('./TwoTracks.js');
 
 class Section  {
   constructor() {
@@ -12,15 +12,17 @@ class Section  {
         if(this.twoTracks[i].isFull()) {
           continue;
         } else if(this.twoTracks[i].artist === track.artist) {
-          return this.twoTracks[i].addTrack(track);
+          this.twoTracks[i].addTrack(track);
+          return true;
         } 
-  
       }
+      
       if(this.twoTracks.length < 4) {
         //new two track
         this.twoTracks.push(new TwoTrack(track.artist, track));
         return true;
       }
+
       return false;
     }
   }

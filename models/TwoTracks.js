@@ -1,4 +1,5 @@
-const Track = require('track');
+const Track = require('./Track.js');
+
 class TwoTracks {
   constructor(artist, track) {
     this.artist = artist;
@@ -15,7 +16,7 @@ class TwoTracks {
   }
 
   isFull() {
-    if(this.track2.name !== "") {
+    if(!this.track2.name) {
       return false;
     } else {
       return true;

@@ -1,4 +1,4 @@
-const Section = require('section');
+const Section = require('./Section.js');
 
 class Page  {
   constructor() {
@@ -9,6 +9,7 @@ class Page  {
     if(this.hasFourSectionsFilled()) {
       return false;
     } else {
+
       for(let i = 0; i < this.sections.length; i++) {
         if(this.sections[i].addTrack(track)) {
           return true;
@@ -17,7 +18,9 @@ class Page  {
       if(this.hasFourSections()) {
         return false;
       } else {
-        return this.sections.push(new Section().addTrack(track));
+        this.sections.push(new Section());
+        this.sections[this.sections.length - 1].addTrack(track);
+        return true;
       }
     }
   }
