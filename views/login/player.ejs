@@ -14,7 +14,7 @@
     <% for (let j = 0; j < currentAllTracks.pages[i].sections.length; j++)  { %>
       <% let sectionNum = j; 
        let displayLetter;
-       let diplayNum = 1; 
+       let displayNum = 1;  
        switch (sectionNum) { 
         case 0: 
           displayLetter = 'A'; 
@@ -30,30 +30,33 @@
           break; 
         default: 
           displayLetter = 'ZZZZ'; 
-       } %> 
-      <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].length; k++) { %>
-        <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
-          <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
-          <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.artist %></p>
-          <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
-        </div>
-        <div class="artist">
-          <p><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
-        </div>
-        <% displayNum++; %>
-        <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
+       } %>
+         <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].twoTracks.length; k++) { %>
           <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
             <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
-            <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.artist %></p>
             <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
           </div>
-        <% } else { %>
-          <div>
-            <p>No Other Track for Artist</p>  
+          <div class="artist">
+            <p><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
           </div>
-        <% } %>  
-        <% displayNum++; %>
-      <% } %>
+          <% displayNum++; %>
+          <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
+            <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
+              <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
+              <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
+            </div>
+          <% } else { %>
+            <div>
+              <p>No Other Track for Artist</p>  
+            </div>
+          <% } %>  
+          <% displayNum++; %>
+         <% } %>  
+
+
+      
+        <p>Here we are 2</p>
+      
     <% } %>
   <% } %>
 <% } %>
