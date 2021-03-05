@@ -71,8 +71,8 @@
   let currentAllTracks = <%- JSON.stringify(currentAllTracks) %>;
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
-  const last5MaxLength = 1;
-  // const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
+
+  const last5MaxLength = (currentAllTracks.pages[0].sections.length > 1) ? 5:2;
   let nextUpList = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
@@ -103,6 +103,7 @@
           currentlyAddingTrack = true;
           console.log('need more tracks');
           findNextSong();
+          console.log(last5TracksPlayed);
         } else {
           console.log('already in process to add track');
         }
