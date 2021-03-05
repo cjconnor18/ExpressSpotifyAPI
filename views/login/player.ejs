@@ -183,8 +183,11 @@
       }
     }).done( () => {
       last5TracksPlayed.push(startTrackURI);
-      currentlyAddingTrack = false;
+      
       isPlayerPlaying = true;
+      setTimeout(() => {
+        currentlyAddingTrack = false;
+      }, 30000);
 
     }).fail(function(err) {
       console.log(err);
