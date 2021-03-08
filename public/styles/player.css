@@ -1,0 +1,123 @@
+
+
+.displayContainer{
+  display: grid;
+  grid-template-columns:  7% 93%;
+  margin-top: 1em;
+  position: relative;
+  
+}
+
+.selectOptions{
+  grid-column: 1/span 1;
+  background-color: red;
+  color: white;
+  font-size: 1.2em;
+  display:  grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 33% 33% 33%;
+}
+.selectOptions p{
+  font-size: 1.2em;
+}
+
+.selectNumTop{
+  grid-column: 2;
+  text-align: right;
+}
+.selectLetter{
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.selectNumBottom{
+  grid-column: 2;
+  grid-row: 3;
+  text-align: right;
+}
+
+
+.twoTracks{
+  grid-column: 2/span 1;
+}
+
+.twoTracks{
+  background-color: #fffff4;
+  border: .14em solid red;
+  position: relative;
+  display: grid;
+  grid-template-columns: 15% 70% 15%;
+  
+}
+
+.track1, .track2{
+  font-size: 1.2em;
+  grid-column: 1/span 3;
+  text-align: center;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track1{
+  padding-bottom: .9em;
+}
+
+.track2 {
+  padding-top: .9em;
+  border-top: .14em solid red;
+}
+
+.artist{
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 1.65em;
+  background-color: #fffff4;
+  border: .1em solid red;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  grid-column: 2/span 1;
+  font-weight: 600;
+}
+
+.hove:hover {
+  cursor: pointer;
+}
+
+.page{
+  display: grid;
+  grid-template-columns: 24% 24% 24% 24%;
+  justify-content: space-between;
+}
+.displayNone{
+  display: none;
+}
+
+.sectionA{
+  grid-column: 1;
+}
+.sectionB{
+  grid-column: 2;
+}
+
+.sectionC{
+  grid-column: 3;
+}
+
+.sectionD{
+  grid-column: 4;
+}
+
+.nextPage{
+  float: right;
+}
+
+.clearFloat{
+  clear: both;
+}

@@ -6,6 +6,7 @@ const Track = require('../models/track');
 const generateRandomString = require('../miscFunctions').generateRandomString;
 const { get } = require('request');
 const { json } = require('express');
+const AllTracks = require('../models/allTracks');
 
 
 const client_id = secrets.clientID;
@@ -144,6 +145,7 @@ const login_playlists_get = (req, res) => {
 const login_player = (req, res) => {
   const id = req.params.playlistId;
   let currentPlaylist = listsOfPlaylists.get(id);
+  let currentAllTracks = new AllTracks();
     
   let optionsTrackList = {
     url: 'https://api.spotify.com/v1/playlists/' + id + '/tracks',
@@ -156,7 +158,7 @@ const login_player = (req, res) => {
     for(let i = 0; i < body.items.length; i++) {
       // console.log(body.items[i].track.name,body.items[i].track.artists[0].name, body.items[i].track.uri);
       let newTrack = new Track(body.items[i].track.name, body.items[i].track.artists[0].name, body.items[i].track.uri);
-      currentPlaylist.addTrack(newTrack);
+      currentAllTracks.addTrack(newTrack);
       
       // console.log(currentPlaylist.tracks.length);
     }
@@ -175,7 +177,7 @@ const login_player = (req, res) => {
     // console.log(body.items[0].track.name);
     // console.log(body.items[0].track.artists[0].name);
     // console.log(body.items[0].track.duration_ms);
-    res.render('./login/player', { refresh_token, access_token, currentPlaylist });
+    res.render('./login/player', { refresh_token, access_token, currentAllTracks });
   })
   //moved into request.get so it would only render after completing list.
   // res.render('./login/player', { refresh_token, access_token, currentPlaylist });

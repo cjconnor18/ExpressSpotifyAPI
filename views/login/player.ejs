@@ -1,31 +1,105 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/header.ejs') %>
 <%- include('../partials/nav.ejs') %>
+<link rel="stylesheet" href="/styles/player.css" />
 
 <p>Welcome to the Player</p>
 <p id='play'>Play Random Now</p>
-<% if(currentPlaylist.tracks.length > 0) { %>
-  <% for (let i = 0; i < currentPlaylist.tracks.length; i++) { %>
-    
-    <div class="track" onclick="addSong( '<%= currentPlaylist.tracks[i].uriReference %>' )">
-      <p><%= i+1 %>) <%= currentPlaylist.tracks[i].name %></p>
-      <p><%= currentPlaylist.tracks[i].artist %></p>
-      <p><%= currentPlaylist.tracks[i].uriReference %></p>
+
+<% if(currentAllTracks.pages.length > 0) { %>
+  
+  <% for (let i = 0; i < currentAllTracks.pages.length; i++) { %>
+    <% let pageNum = i; %>
+    <% if (i === 0) { %>
+      <div id="page<%= i %>" class="page">
+    <% } else { %>
+      <div id="page<%= i %>" class="displayNone">
+    <% } %>
+    <% for (let j = 0; j < currentAllTracks.pages[i].sections.length; j++)  { %>
+      <% let sectionNum = j; 
+       let displayLetter;
+       let displayNum = 1;  
+       switch (sectionNum) { 
+        case 0: 
+          displayLetter = 'A'; 
+          break; 
+        case 1: 
+          displayLetter = 'B'; 
+          break; 
+        case 2: 
+          displayLetter = 'C';
+          break; 
+        case 3: 
+          displayLetter = 'D'; 
+          break; 
+        default: 
+          displayLetter = 'ZZZZ'; 
+       } %>
+       <div class="section<%= displayLetter %>">
+         <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].twoTracks.length; k++) { %>
+            <div class="displayContainer">
+              <div class="selectOptions">
+                <p class="selectNumTop"><%= displayNum %></p>
+                <p class="selectLetter"><%= displayLetter %></p>
+                <p class="selectNumBottom"><%= displayNum + 1 %></p>
+              </div>
+            
+            <div class="twoTracks">
+            <p class="track1 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
+              <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %>
+            </p>
+          
+          
+            <p class="artist"><%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
+          
+          <% displayNum++; %>
+          <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
+            
+              <p class="track2 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %>' )">
+                <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %>
+              </p>
+            
+          <% } else { %>
+            
+              <p class="track2">&nbsp;</p>  
+            
+          <% } %>  
+          </div>
+          </div>
+          <% displayNum++; %>
+         <% } %> 
+        </div>
+    <% } %>
     </div>
-    
   <% } %>
+  
 <% } %>
 
+<% if (currentAllTracks.pages.length > 1) { %>
+  <button id="prevPage" class="displayNone" onclick="changePage('prev')">Previous Page</button>
+  <button id="nextPage" class="nextPage" onclick="changePage('next')">Next Page</button>
+  <div class="clearFloat"></div>
+<% } %>
+
+
+
+<%- include('../partials/footer.ejs') %>
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
   let access_token = <%- JSON.stringify(access_token) %>;
   let refresh_token = <%- JSON.stringify(refresh_token) %>;
-  let currentPlaylist = <%- JSON.stringify(currentPlaylist) %>;
+  let currentPlaylist = <%- JSON.stringify(currentAllTracks) %>;
+  let currentAllTracks = <%- JSON.stringify(currentAllTracks) %>;
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
-  const last5MaxLength = (currentPlaylist.tracks.length > 5) ? 5:currentPlaylist.tracks.length - 1;
+  let currentPage = 0;
+  let lastPage = currentAllTracks.pages.length -1;
+  let pages = [];
+  
+
+  const last5MaxLength = (currentAllTracks.pages[0].sections.length > 1) ? 5:2;
   let nextUpList = [];
   let intervalTimeMinutes = 50;
   let intervalTime = 1000 * 60 * intervalTimeMinutes; //1000 ms per 1 sec and 60 sec per min
@@ -54,11 +128,12 @@
       if(state.track_window.next_tracks.length === 0) {
         if(!currentlyAddingTrack) {
           currentlyAddingTrack = true;
-          console.log('changed to true on line 57');
           console.log('need more tracks');
           findNextSong();
+          console.log(last5TracksPlayed);
         } else {
           console.log('already in process to add track');
+          console.log(last5TracksPlayed);
         }
         
       }
@@ -80,6 +155,44 @@
 
     player.connect();
   };
+
+  function changePage(direction) {
+    if(!pages.length > 0) {
+      for(let i = 0; i < currentAllTracks.pages.length; i++) {
+        let thisPage = document.getElementById('page' + i);
+          pages.push(thisPage);
+      }
+    }
+    if(direction === "next") {
+      pages[currentPage].classList.remove('page');
+      pages[currentPage].classList.add('displayNone');
+      if(currentPage === 0) {
+        document.getElementById('prevPage').classList.remove('displayNone');
+        document.getElementById('prevPage').classList.add('prevPage');
+      }
+      currentPage++;
+      pages[currentPage].classList.remove('displayNone');
+      pages[currentPage].classList.add('page');
+      if(currentPage === lastPage) {
+        document.getElementById('nextPage').classList.remove('nextPage');
+        document.getElementById('nextPage').classList.add('displayNone');
+      }
+    } else if(direction === "prev") {
+      pages[currentPage].classList.remove('page');
+      pages[currentPage].classList.add('displayNone');
+      if(currentPage === lastPage) {
+        document.getElementById('nextPage').classList.add('nextPage');
+        document.getElementById('nextPage').classList.remove('displayNone');
+      }
+      currentPage--;
+      pages[currentPage].classList.remove('displayNone');
+      pages[currentPage].classList.add('page');
+      if(currentPage === 0) {
+        document.getElementById('prevPage').classList.remove('prevPage');
+        document.getElementById('prevPage').classList.add('displayNone');
+      }
+    }
+  }
 
   function addSong(songURI) {
     if(!isPlayerPlaying) {
@@ -121,7 +234,6 @@
 
   function startPlay(startTrackURI,currentPlayerId = current_device_id){
     currentlyAddingTrack = true;
-    console.log('changed to true on line 123');
     if(startTrackURI === 'random') {
       startTrackURI = randomSong();
     } else {
@@ -138,9 +250,11 @@
       }
     }).done( () => {
       last5TracksPlayed.push(startTrackURI);
-      currentlyAddingTrack = false;
-      console.log('changed to false on line 141');
+      
       isPlayerPlaying = true;
+      setTimeout(() => {
+        currentlyAddingTrack = false;
+      }, 30000);
 
     }).fail(function(err) {
       console.log(err);
@@ -163,8 +277,18 @@
   }
   
   function randomSong() {
-    let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
-    startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    //let randomIndex = Math.floor(Math.random() * currentPlaylist.tracks.length);
+    //startTrackURI = currentPlaylist.tracks[randomIndex].uriReference;
+    let firstRandomIndex = Math.floor(Math.random() * currentAllTracks.pages.length);
+    let secondRandomIndex = Math.floor(Math.random() * currentAllTracks.pages[firstRandomIndex].sections.length);
+    let thirdRandomIndex = Math.floor(Math.random() * currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks.length);
+    let firstOrSecondTrack = Math.floor(Math.random() * 2);
+    let startTrackURI;
+    if(firstOrSecondTrack === 0 ) {
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks[thirdRandomIndex].track1.uriReference;
+    } else {
+      startTrackURI = currentAllTracks.pages[firstRandomIndex].sections[secondRandomIndex].twoTracks[thirdRandomIndex].track2.uriReference;
+    }
     let isLastFive = isLastFiveSongsPlayed(startTrackURI);
     if(isLastFive) {
       return randomSong();
@@ -198,7 +322,6 @@
         removeSongFromNextUp(songURI);
       }
       currentlyAddingTrack = false;
-      console.log('changed to false on line 200');
 
     }).fail(function(err) {
       console.log(err);
@@ -222,4 +345,3 @@
   }
 
 </script>
-<%- include('../partials/footer.ejs') %>
