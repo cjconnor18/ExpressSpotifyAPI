@@ -1,0 +1,76 @@
+
+
+.twoTracks{
+  background-color: #fffff4;
+  border: .14em solid red;
+  display: grid;
+  grid-template-columns: 25% 50% 25%;
+  position: relative;
+  margin-top: 1em;
+  
+}
+
+.track1, .track2{
+  font-size: 1.2em;
+  grid-column: 1/span 3;
+  text-align: center;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track1{
+  padding-bottom: .9em;
+}
+
+.track2 {
+  padding-top: .9em;
+  border-top: .14em solid red;
+}
+
+.artist{
+  grid-column: 2/span 1;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 1.65em;
+  background-color: #fffff4;
+  border: .2em solid red;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.hove:hover {
+  cursor: pointer;
+}
+
+.page{
+  display: grid;
+  grid-template-columns: 24% 24% 24% 24%;
+  justify-content: space-between;
+}
+.displayNone{
+  display: none;
+}
+
+.sectionA{
+  grid-column: 1;
+}
+.sectionB{
+  grid-column: 2;
+}
+
+.sectionC{
+  grid-column: 3;
+}
+
+.sectionD{
+  grid-column: 4;
+}
+
+

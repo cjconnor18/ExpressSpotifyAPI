@@ -1,3 +1,8 @@
+*{
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
 .home-link {
   color: black;
   text-decoration: none;

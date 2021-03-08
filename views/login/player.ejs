@@ -1,16 +1,20 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/header.ejs') %>
 <%- include('../partials/nav.ejs') %>
+<link rel="stylesheet" href="/styles/player.css" />
 
 <p>Welcome to the Player</p>
 <p id='play'>Play Random Now</p>
-<% if(currentAllTracks.pages.length > 0) { %> 
-  <p>No register in the currentAllTracks below</p>
-<% } %> 
 
 <% if(currentAllTracks.pages.length > 0) { %>
+  
   <% for (let i = 0; i < currentAllTracks.pages.length; i++) { %>
     <% let pageNum = i; %>
+    <% if (i === 0) { %>
+      <div id="page<%= i %>" class="page">
+    <% } else { %>
+      <div id="page<%= i %>" class="displayNone">
+    <% } %>
     <% for (let j = 0; j < currentAllTracks.pages[i].sections.length; j++)  { %>
       <% let sectionNum = j; 
        let displayLetter;
@@ -31,35 +35,39 @@
         default: 
           displayLetter = 'ZZZZ'; 
        } %>
+       <div class="section<%= displayLetter %>">
          <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].twoTracks.length; k++) { %>
-          <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
-            <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %></p>
-            <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %></p>
-          </div>
-          <div class="artist">
-            <p><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
-          </div>
+            <div class="twoTracks">
+            <p class="track1 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
+              <%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %>
+            </p>
+          
+          
+            <p class="artist"><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
+          
           <% displayNum++; %>
           <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
-            <div class="track" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %>' )">
-              <p><%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %></p>
-              <p><%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %></p>
-            </div>
+            
+              <p class="track2 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %>' )">
+                <%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %>
+              </p>
+            
           <% } else { %>
-            <div>
-              <p>No Other Track for Artist</p>  
-            </div>
+            
+              <p class="track2">&nbsp;</p>  
+            
           <% } %>  
+          </div>
           <% displayNum++; %>
-         <% } %>  
-
-
-      
-        <p>Here we are 2</p>
-      
+         <% } %> 
+        </div>
     <% } %>
+    </div>
   <% } %>
+  
 <% } %>
+<button id="prevPage" class="displayNone" onclick="changePage('prev')">Previous Page</button>
+<button id="prevPage" class="prevPage" onclick="changePage('next')">Next Page</button>
 
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -71,6 +79,10 @@
   let currentAllTracks = <%- JSON.stringify(currentAllTracks) %>;
   let currentlyAddingTrack = false;
   let last5TracksPlayed = [];
+  let currentPage = 0;
+  let lastPage = currentAllTracks.pages.length -1;
+  let pages = [];
+  
 
   const last5MaxLength = (currentAllTracks.pages[0].sections.length > 1) ? 5:2;
   let nextUpList = [];
@@ -128,6 +140,47 @@
 
     player.connect();
   };
+
+  function changePage(direction) {
+    if(!pages.length > 0) {
+      for(let i = 0; i < currentAllTracks.pages.length; i++) {
+        let thisPage = document.getElementById('page' + i);
+          pages.push(thisPage);
+      }
+    }
+    if(direction === "next") {
+      pages[currentPage].classList.remove('page');
+      pages[currentPage].classList.add('displayNone');
+      if(currentPage === 0) {
+        document.getElementById('prevPage').classList.remove('displayNone');
+        document.getElementById('prevPage').classList.add('prevPage');
+      }
+      currentPage++;
+      pages[currentPage].classList.remove('displayNone');
+      pages[currentPage].classList.add('page');
+      if(currentPage === lastPage) {
+        document.getElementById('nextPage').classList.remove('nextPage');
+        document.getElementById('nextPage').classList.add('displayNone');
+      }
+    } else if(direction === "prev") {
+      pages[currentPage].classList.remove('page');
+      pages[currentPage].classList.add('displayNone');
+      if(currentPage === lastPage) {
+        document.getElementById('nextPage').classList.add('nextPage');
+        document.getElementById('nextPage').classList.remove('displayNone');
+      }
+      currentPage--;
+      pages[currentPage].classList.remove('displayNone');
+      pages[currentPage].classList.add('page');
+      if(currentPage === 0) {
+        document.getElementById('prevPage').classList.remove('prevPage');
+        document.getElementById('prevPage').classList.add('displayNone');
+      }
+
+
+
+    }
+  }
 
   function addSong(songURI) {
     if(!isPlayerPlaying) {
