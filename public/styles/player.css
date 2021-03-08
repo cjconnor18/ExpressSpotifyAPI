@@ -73,4 +73,11 @@
   grid-column: 4;
 }
 
+.nextPage{
+  float: right;
+}
+
+.clearFloat{
+  clear: both;
+}
 
