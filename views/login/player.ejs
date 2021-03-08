@@ -37,19 +37,26 @@
        } %>
        <div class="section<%= displayLetter %>">
          <% for(let k = 0; k < currentAllTracks.pages[i].sections[j].twoTracks.length; k++) { %>
+            <div class="displayContainer">
+              <div class="selectOptions">
+                <p class="selectNumTop"><%= displayNum %></p>
+                <p class="selectLetter"><%= displayLetter %></p>
+                <p class="selectNumBottom"><%= displayNum + 1 %></p>
+              </div>
+            
             <div class="twoTracks">
             <p class="track1 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.uriReference %>' )">
-              <%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %>
+              <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track1.name %>
             </p>
           
           
-            <p class="artist"><%= displayLetter %> : <%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
+            <p class="artist"><%= currentAllTracks.pages[i].sections[j].twoTracks[k].artist %></p>
           
           <% displayNum++; %>
           <% if(currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference) { %>
             
               <p class="track2 hove" onclick="addSong( '<%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.uriReference %>' )">
-                <%= displayNum %>) <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %>
+                <%= currentAllTracks.pages[i].sections[j].twoTracks[k].track2.name %>
               </p>
             
           <% } else { %>
@@ -57,6 +64,7 @@
               <p class="track2">&nbsp;</p>  
             
           <% } %>  
+          </div>
           </div>
           <% displayNum++; %>
          <% } %> 
