@@ -67,7 +67,7 @@
   
 <% } %>
 <button id="prevPage" class="displayNone" onclick="changePage('prev')">Previous Page</button>
-<button id="prevPage" class="prevPage" onclick="changePage('next')">Next Page</button>
+<button id="nextPage" class="nextPage" onclick="changePage('next')">Next Page</button>
 
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -152,22 +152,29 @@
       pages[currentPage].classList.remove('page');
       pages[currentPage].classList.add('displayNone');
       if(currentPage === 0) {
+        console.log('155');
         document.getElementById('prevPage').classList.remove('displayNone');
         document.getElementById('prevPage').classList.add('prevPage');
       }
       currentPage++;
       pages[currentPage].classList.remove('displayNone');
       pages[currentPage].classList.add('page');
+      console.log('162');
       if(currentPage === lastPage) {
         document.getElementById('nextPage').classList.remove('nextPage');
         document.getElementById('nextPage').classList.add('displayNone');
+        console.log(166);
       }
     } else if(direction === "prev") {
       pages[currentPage].classList.remove('page');
       pages[currentPage].classList.add('displayNone');
+      console.log('171');
+      console.log(currentPage + "current page");
+      console.log(lastPage + "last page");
       if(currentPage === lastPage) {
         document.getElementById('nextPage').classList.add('nextPage');
         document.getElementById('nextPage').classList.remove('displayNone');
+        console.log('175');
       }
       currentPage--;
       pages[currentPage].classList.remove('displayNone');
@@ -175,6 +182,7 @@
       if(currentPage === 0) {
         document.getElementById('prevPage').classList.remove('prevPage');
         document.getElementById('prevPage').classList.add('displayNone');
+        console.log('183');
       }
 
 
