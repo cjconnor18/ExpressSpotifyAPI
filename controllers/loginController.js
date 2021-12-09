@@ -9,8 +9,12 @@ const { json } = require('express');
 const AllTracks = require('../models/AllTracks');
 
 // when using secrets file, have to change process.env to secrets and remove comment for const secrets
-const client_id = process.env.clientID;
-const client_secret = process.env.clientSecret;
+const secrets = {
+  clientID: process.env.clientID,
+  clientSecret: process.env.clientSecret
+}
+const client_id = secrets.clientID;
+const client_secret = secrets.clientSecret;
 const redirect_uri = "http://localhost:3000/login/callback";
 let stateKey = 'spotify_auth_state';
 let listsOfPlaylists = new Map();
