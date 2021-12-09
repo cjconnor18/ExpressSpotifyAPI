@@ -15,7 +15,9 @@ const secrets = {
 }
 const client_id = secrets.clientID;
 const client_secret = secrets.clientSecret;
-const redirect_uri = "http://localhost:3000/login/callback";
+const redirect_uri = "https://jukebox1127.herokuapp.com/login/callback"
+// use the next line for testing
+//const redirect_uri = "http://localhost:3000/login/callback";
 let stateKey = 'spotify_auth_state';
 let listsOfPlaylists = new Map();
 
