@@ -6,7 +6,7 @@ const Track = require('../models/track');
 const generateRandomString = require('../miscFunctions').generateRandomString;
 const { get } = require('request');
 const { json } = require('express');
-const AllTracks = require('../models/allTracks');
+const AllTracks = require('../models/AllTracks');
 
 // when using secrets file, have to change process.env to secrets and remove comment for const secrets
 const client_id = process.env.clientID;
