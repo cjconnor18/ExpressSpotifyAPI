@@ -6,7 +6,7 @@ const loginRoutes = require('./routes/loginRoutes');
 const app = express();
 
 //set up server
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 
 //set view engine
 app.set('view engine', 'ejs');
