@@ -1,4 +1,4 @@
-const Track = require('./Track.js');
+const Track = require('./track.js');
 
 class TwoTracks {
   constructor(artist, track) {
